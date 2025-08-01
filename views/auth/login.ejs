@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - VietBank Mobile</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>🏦 VietBank Mobile</h1>
+                <p>Chào mừng bạn quay trở lại</p>
+            </div>
+            
+            <form class="auth-form" action="/auth/login" method="POST">
+                <h2>Đăng nhập</h2>
+                
+                <% if (error) { %>
+                    <div class="error-message"><%= error %></div>
+                <% } %>
+                
+                <div class="form-group">
+                    <label for="username">Tên đăng nhập</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <button type="submit" class="auth-btn">Đăng nhập</button>
+                
+                <div class="auth-links">
+                    <a href="/auth/register">Chưa có tài khoản? Đăng ký ngay</a>
+                </div>
+            </form>
+            
+            <div class="demo-accounts">
+                <h3>Tài khoản demo:</h3>
+                <p><strong>user1</strong> / password123 (2,458,000 VNĐ)</p>
+                <p><strong>user2</strong> / password123 (1,850,000 VNĐ)</p>
+                <p><strong>admin</strong> / admin123 (50,000,000 VNĐ)</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

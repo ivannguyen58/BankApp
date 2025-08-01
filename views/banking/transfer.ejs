@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chuyển tiền - VietBank Mobile</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="screen-header">
+            <button class="back-btn" onclick="window.location.href='/banking/dashboard'">←</button>
+            <div class="screen-title">Chuyển tiền</div>
+        </div>
+        
+        <div class="balance-info">
+            <div class="current-balance">
+                Số dư hiện tại: <strong><%= account.balance.toLocaleString('vi-VN') %> VNĐ</strong>
+            </div>
+        </div>
+
+        <% if (error) { %>
+            <div class="error-message"><%= error %></div>
+        <% } %>
+
+        <% if (success) { %>
+            <div class="success-message"><%= success %></div>
+        <% } %>
+        
+        <form class="transfer-form" action="/banking/transfer" method="POST">
+            <div class="form-group">
+                <label class="form-label">Số tài khoản người nhận</label>
+                <input type="text" class="form-input" id="recipientAccount" name="recipientAccount" placeholder="Nhập số tài khoản" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Tên người nhận</label>
+                <input type="text" class="form-input" id="recipientName" placeholder="Tên sẽ hiện sau khi nhập STK" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Số tiền</label>
+                <input type="number" class="form-input" id="transferAmount" name="amount" placeholder="Nhập số tiền" required min="1000">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Nội dung chuyển tiền</label>
+                <input type="text" class="form-input" id="transferMessage" name="message" placeholder="Nội dung chuyển tiền">
+            </div>
+            
+            <div class="kyc-section">
+                <div class="kyc-title">
+                    <span class="kyc-icon">🛡️</span>
+                    Thông tin KYC
+                </div>
+                <div class="kyc-item">
+                    <span>Xác thực danh tính</span>
+                    <span class="kyc-status">✓ Đã xác thực</span>
+                </div>
+                <div class="kyc-item">
+                    <span>Xác thực sinh trắc học</span>
+                    <span class="kyc-status">✓ Đã xác thực</span>
+                </div>
+                <div class="kyc-item">
+                    <span>Hạn mức giao dịch</span>
+                    <span class="kyc-status">500,000,000 VNĐ/ngày</span>
+                </div>
+            </div>
+            
+            <button type="submit" class="transfer-btn" id="transferBtn">
+                Chuyển tiền
+            </button>
+        </form>
+    </div>
+
+    <script src="/js/transfer.js"></script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - VietBank Mobile</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="user-info">
+                <h1>Chào <%= user.fullName %>!</h1>
+                <a href="/auth/logout" class="logout-btn">Đăng xuất</a>
+            </div>
+            <div class="balance" id="accountBalance"><%= account.balance.toLocaleString('vi-VN') %> VNĐ</div>
+            <div class="account-number">STK: <%= account.accountNumber %></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="feature-grid">
+                <div class="feature-card nfc" id="nfcCard">
+                    <span class="feature-icon">📱</span>
+                    <div class="feature-title">NFC Pay</div>
+                    <div class="feature-desc">Thanh toán không tiếp xúc</div>
+                </div>
+                <div class="feature-card transfer" onclick="window.location.href='/banking/transfer'">
+                    <span class="feature-icon">💸</span>
+                    <div class="feature-title">Chuyển tiền</div>
+                    <div class="feature-desc">Chuyển tiền với KYC</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NFC Pay Modal -->
+        <div class="modal" id="nfcModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>NFC Payment</h3>
+                    <button class="close-btn" onclick="closeNFCModal()">&times;</button>
+                </div>
+                <div class="nfc-container">
+                    <div class="nfc-animation" id="nfcAnimation">
+                        <div class="nfc-icon">📱</div>
+                    </div>
+                    <div class="nfc-status" id="nfcStatus">Sẵn sàng thanh toán</div>
+                    <div class="nfc-amount" id="nfcAmount">0 VNĐ</div>
+                    <button class="start-nfc-btn" id="startNfcBtn" onclick="startNFCPayment()">
+                        Bắt đầu quét NFC
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Modal -->
+        <div class="modal" id="successModal">
+            <div class="modal-content">
+                <div class="success-icon">✅</div>
+                <div class="modal-title" id="modalTitle">Giao dịch thành công!</div>
+                <div class="modal-message" id="modalMessage">Giao dịch của bạn đã được thực hiện thành công.</div>
+                <button class="modal-btn" onclick="closeModal()">Đóng</button>
+            </div>
+        </div>
+
+        <!-- Error Modal -->
+        <div class="modal" id="errorModal">
+            <div class="modal-content">
+                <div class="success-icon" style="color: #dc3545;">❌</div>
+                <div class="modal-title" id="errorModalTitle">Giao dịch thất bại!</div>
+                <div class="modal-message" id="errorModalMessage">Đã có lỗi xảy ra.</div>
+                <button class="modal-btn" style="background: #dc3545;" onclick="closeErrorModal()">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>

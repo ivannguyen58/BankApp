@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VietBank Mobile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 414px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.3);
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.05) 10px,
+                rgba(255,255,255,0.05) 20px
+            );
+            animation: shimmer 3s linear infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%); }
+            100% { transform: translateX(100%) translateY(100%); }
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .balance {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .account-number {
+            font-size: 14px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 20px;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px 20px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .feature-card:hover::before {
+            left: 100%;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .feature-card.nfc {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .feature-card.transfer {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .feature-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .feature-desc {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        /* Screens */
+        .screen {
+            display: none;
+            padding: 20px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .screen-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            margin-right: 15px;
+            padding: 5px;
+            color: #666;
+        }
+        
+        .screen-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        /* NFC Pay Screen */
+        .nfc-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .nfc-animation {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px;
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+        }
+        
+        .nfc-animation.scanning {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 25px 50px rgba(102, 126, 234, 0.5);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+            }
+        }
+        
+        .nfc-icon {
+            font-size: 80px;
+            color: white;
+        }
+        
+        .nfc-status {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .nfc-amount {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        
+        .start-nfc-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .start-nfc-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Transfer Screen */
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .kyc-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .kyc-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .kyc-icon {
+            margin-right: 10px;
+            color: #28a745;
+        }
+        
+        .kyc-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .kyc-item:last-child {
+            border-bottom: none;
+        }
+        
+        .kyc-status {
+            color: #28a745;
+            font-weight: 600;
+        }
+        
+        .transfer-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.3);
+        }
+        
+        .transfer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(240, 147, 251, 0.4);
+        }
+        
+        /* Success Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 300px;
+            width: 90%;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .success-icon {
+            font-size: 64px;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .modal-message {
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .modal-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff40;
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>VietBank Mobile</h1>
+            <div class="balance" id="accountBalance">2,458,000 VNĐ</div>
+            <div class="account-number">STK: 1234567890</div>
+        </div>
+
+        <!-- Main Screen -->
+        <div id="mainScreen" class="screen active">
+            <div class="main-content">
+                <div class="feature-grid">
+                    <div class="feature-card nfc" onclick="showNFCScreen()">
+                        <span class="feature-icon">📱</span>
+                        <div class="feature-title">NFC Pay</div>
+                        <div class="feature-desc">Thanh toán không tiếp xúc</div>
+                    </div>
+                    <div class="feature-card transfer" onclick="showTransferScreen()">
+                        <span class="feature-icon">💸</span>
+                        <div class="feature-title">Chuyển tiền</div>
+                        <div class="feature-desc">Chuyển tiền với KYC</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NFC Pay Screen -->
+        <div id="nfcScreen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn" onclick="showMainScreen()">←</button>
+                <div class="screen-title">NFC Pay</div>
+            </div>
+            
+            <div class="nfc-container">
+                <div class="nfc-animation" id="nfcAnimation">
+                    <div class="nfc-icon">📱</div>
+                </div>
+                <div class="nfc-status" id="nfcStatus">Sẵn sàng thanh toán</div>
+                <div class="nfc-amount" id="nfcAmount">0 VNĐ</div>
+                <button class="start-nfc-btn" id="startNfcBtn" onclick="startNFCPayment()">
+                    Bắt đầu quét NFC
+                </button>
+            </div>
+        </div>
+
+        <!-- Transfer Screen -->
+        <div id="transferScreen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn" onclick="showMainScreen()">←</button>
+                <div class="screen-title">Chuyển tiền</div>
+            </div>
+            
+            <form id="transferForm">
+                <div class="form-group">
+                    <label class="form-label">Số tài khoản người nhận</label>
+                    <input type="text" class="form-input" id="recipientAccount" placeholder="Nhập số tài khoản" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Tên người nhận</label>
+                    <input type="text" class="form-input" id="recipientName" placeholder="Tên sẽ hiện sau khi nhập STK" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Số tiền</label>
+                    <input type="number" class="form-input" id="transferAmount" placeholder="Nhập số tiền" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Nội dung chuyển tiền</label>
+                    <input type="text" class="form-input" id="transferMessage" placeholder="Nội dung chuyển tiền">
+                </div>
+                
+                <div class="kyc-section">
+                    <div class="kyc-title">
+                        <span class="kyc-icon">🛡️</span>
+                        Thông tin KYC
+                    </div>
+                    <div class="kyc-item">
+                        <span>Xác thực danh tính</span>
+                        <span class="kyc-status">✓ Đã xác thực</span>
+                    </div>
+                    <div class="kyc-item">
+                        <span>Xác thực sinh trắc học</span>
+                        <span class="kyc-status">✓ Đã xác thực</span>
+                    </div>
+                    <div class="kyc-item">
+                        <span>Hạn mức giao dịch</span>
+                        <span class="kyc-status">500,000,000 VNĐ/ngày</span>
+                    </div>
+                </div>
+                
+                <button type="submit" class="transfer-btn">
+                    Chuyển tiền
+                </button>
+            </form>
+        </div>
+
+        <!-- Success Modal -->
+        <div class="modal" id="successModal">
+            <div class="modal-content">
+                <div class="success-icon">✅</div>
+                <div class="modal-title" id="modalTitle">Giao dịch thành công!</div>
+                <div class="modal-message" id="modalMessage">Giao dịch của bạn đã được thực hiện thành công.</div>
+                <button class="modal-btn" onclick="closeModal()">Đóng</button>
+            </div>
+        </div>
+
+        <!-- Error Modal -->
+        <div class="modal" id="errorModal">
+            <div class="modal-content">
+                <div class="success-icon" style="color: #dc3545;">❌</div>
+                <div class="modal-title" id="errorModalTitle">Giao dịch thất bại!</div>
+                <div class="modal-message" id="errorModalMessage">Đã có lỗi xảy ra.</div>
+                <button class="modal-btn" style="background: #dc3545;" onclick="closeErrorModal()">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Account balance management
+        let currentBalance = 2458000; // Initial balance in VND
+        
+        // Fake account database
+        const fakeAccounts = {
+            '0123456789': 'Nguyễn Văn A',
+            '9876543210': 'Trần Thị B',
+            '1111222233': 'Lê Minh C',
+            '4444555566': 'Phạm Thu D'
+        };
+        
+        // Update balance display
+        function updateBalanceDisplay() {
+            const balanceElement = document.getElementById('accountBalance');
+            balanceElement.textContent = currentBalance.toLocaleString('vi-VN') + ' VNĐ';
+            
+            // Add animation effect
+            balanceElement.style.transform = 'scale(1.1)';
+            balanceElement.style.color = '#ff6b6b';
+            setTimeout(() => {
+                balanceElement.style.transform = 'scale(1)';
+                balanceElement.style.color = 'white';
+            }, 300);
+        }
+        
+        // Deduct amount from balance
+        function deductBalance(amount) {
+            if (currentBalance >= amount) {
+                currentBalance -= amount;
+                updateBalanceDisplay();
+                return true;
+            }
+            return false;
+        }
+
+        // Screen navigation
+        function showMainScreen() {
+            hideAllScreens();
+            document.getElementById('mainScreen').classList.add('active');
+        }
+
+        function showNFCScreen() {
+            hideAllScreens();
+            document.getElementById('nfcScreen').classList.add('active');
+        }
+
+        function showTransferScreen() {
+            hideAllScreens();
+            document.getElementById('transferScreen').classList.add('active');
+        }
+
+        function hideAllScreens() {
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => screen.classList.remove('active'));
+        }
+
+        // NFC Functionality
+        let nfcScanning = false;
+
+        function startNFCPayment() {
+            const btn = document.getElementById('startNfcBtn');
+            const status = document.getElementById('nfcStatus');
+            const animation = document.getElementById('nfcAnimation');
+            const amount = document.getElementById('nfcAmount');
+            
+            if (!nfcScanning) {
+                nfcScanning = true;
+                btn.innerHTML = '<span class="loading"></span>Đang quét...';
+                btn.disabled = true;
+                status.textContent = 'Đưa điện thoại gần thiết bị POS';
+                animation.classList.add('scanning');
+                
+                // Simulate NFC detection
+                setTimeout(() => {
+                    const randomAmount = Math.floor(Math.random() * 500000) + 50000;
+                    amount.textContent = randomAmount.toLocaleString('vi-VN') + ' VNĐ';
+                    status.textContent = 'Phát hiện thiết bị POS';
+                    
+                    setTimeout(() => {
+                        status.textContent = 'Đang xử lý thanh toán...';
+                        setTimeout(() => {
+                            // Check if balance is sufficient
+                            if (currentBalance >= randomAmount) {
+                                deductBalance(randomAmount);
+                                showSuccessModal('Thanh toán NFC thành công!', `Đã thanh toán ${randomAmount.toLocaleString('vi-VN')} VNĐ`);
+                            } else {
+                                showErrorModal('Thanh toán thất bại!', 'Số dư tài khoản không đủ để thực hiện giao dịch này.');
+                            }
+                            resetNFC();
+                        }, 2000);
+                    }, 1000);
+                }, 3000);
+            }
+        }
+
+        function resetNFC() {
+            const btn = document.getElementById('startNfcBtn');
+            const status = document.getElementById('nfcStatus');
+            const animation = document.getElementById('nfcAnimation');
+            const amount = document.getElementById('nfcAmount');
+            
+            nfcScanning = false;
+            btn.innerHTML = 'Bắt đầu quét NFC';
+            btn.disabled = false;
+            status.textContent = 'Sẵn sàng thanh toán';
+            animation.classList.remove('scanning');
+            amount.textContent = '0 VNĐ';
+        }
+
+        // Transfer functionality
+        document.getElementById('recipientAccount').addEventListener('input', function(e) {
+            const account = e.target.value;
+            const nameField = document.getElementById('recipientName');
+            
+            if (fakeAccounts[account]) {
+                nameField.value = fakeAccounts[account];
+                nameField.style.color = '#28a745';
+            } else {
+                nameField.value = account.length >= 10 ? 'Không tìm thấy tài khoản' : '';
+                nameField.style.color = account.length >= 10 ? '#dc3545' : '#666';
+            }
+        });
+
+        document.getElementById('transferForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const account = document.getElementById('recipientAccount').value;
+            const amount = document.getElementById('transferAmount').value;
+            const name = document.getElementById('recipientName').value;
+            
+            if (!fakeAccounts[account]) {
+                alert('Số tài khoản không hợp lệ!');
+                return;
+            }
+            
+            if (parseInt(amount) <= 0) {
+                alert('Số tiền phải lớn hơn 0!');
+                return;
+            }
+            
+            const transferAmount = parseInt(amount);
+            
+            // Check if balance is sufficient
+            if (currentBalance < transferAmount) {
+                alert('Số dư tài khoản không đủ để thực hiện giao dịch này!');
+                return;
+            }
+
+            const btn = document.querySelector('.transfer-btn');
+            btn.innerHTML = '<span class="loading"></span>Đang xử lý...';
+            btn.disabled = true;
+            
+            // Simulate processing
+            setTimeout(() => {
+                // Deduct balance
+                deductBalance(transferAmount);
+                
+                showSuccessModal(
+                    'Chuyển tiền thành công!', 
+                    `Đã chuyển ${transferAmount.toLocaleString('vi-VN')} VNĐ cho ${name}`
+                );
+                
+                // Reset form
+                document.getElementById('transferForm').reset();
+                document.getElementById('recipientName').value = '';
+                btn.innerHTML = 'Chuyển tiền';
+                btn.disabled = false;
+            }, 3000);
+        });
+
+        // Modal functionality
+        function showSuccessModal(title, message) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('successModal').classList.add('show');
+        }
+        
+        function showErrorModal(title, message) {
+            document.getElementById('errorModalTitle').textContent = title;
+            document.getElementById('errorModalMessage').textContent = message;
+            document.getElementById('errorModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('successModal').classList.remove('show');
+            showMainScreen();
+        }
+        
+        function closeErrorModal() {
+            document.getElementById('errorModal').classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('successModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+        
+        document.getElementById('errorModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeErrorModal();
+            }
+        });
+
+        // Add some interactive effects
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>
